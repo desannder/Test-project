@@ -1,4 +1,5 @@
 Requirements:
+
 The calculator can perform addition, subtraction, multiplication and division operations with two numbers: a + b, a - b, a * b, a / b. The data is transferred on a single line (see example below). Solutions in which each number and arithmetic operation is passed from a new line are considered incorrect.
 
 The calculator can work with both Arabic (1, 2, 3, 4, 5...) and Roman (I, II, III, IV, V...) numbers.
@@ -18,3 +19,15 @@ If the user enters a string that does not match one of the above arithmetic oper
 The result of a division operation is an integer, the remainder is discarded.
 
 The result of the calculator operation with Arabic numbers can be negative numbers and zero. The result of the calculator with Roman numerals can only be positive numbers, if the result is less than one, the program should panic. 
+
+===================================================================
+
+How to make a new commit
+
+echo "ANYTHING TEXT" >> README.md
+git init
+git add README.md
+git commit -m First commit
+git branch -M main
+git remote add origin git@github.com:desannder/test.git (or other repository)
+git push -u origin main
