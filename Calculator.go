@@ -13,7 +13,7 @@ import (
 func main() {
 	reader := bufio.NewReader(os.Stdin)
 
-	fmt.Print("Enter the expression: ")
+	fmt.Print("Введите выражение: ")
 	expression, _ := reader.ReadString('\n')
 
 	result, operand1Type, operand2Type := calculateResult(expression)
@@ -23,12 +23,10 @@ func main() {
 }
 
 func calculateResult(expression string) (interface{}, string, string) {
-	// Remove trailing newline character
 	expression = strings.TrimSuffix(expression, "\n")
-
 	tokens := strings.Split(expression, " ")
 	if len(tokens) != 3 {
-		fmt.Println("Invalid expression")
+		fmt.Println("Недопустимое выражение")
 		os.Exit(1)
 	}
 
@@ -37,7 +35,7 @@ func calculateResult(expression string) (interface{}, string, string) {
 	operand2Type := determineNumberType(tokens[2]) // Определяем тип второго операнда
 
 	if operand1Type != operand2Type {
-		fmt.Println("Mixing of arabic and roman numerals is not allowed")
+		fmt.Println("Смешение арабских и римских цифр не допускается")
 		return nil, "", ""
 	}
 
@@ -60,7 +58,7 @@ func calculateResult(expression string) (interface{}, string, string) {
 	case "/":
 		result = divide(operand1, operand2)
 	default:
-		fmt.Println("Invalid operator:", operator)
+		fmt.Println("Недопустимое выражение:", operator)
 		return nil, "", ""
 	}
 
@@ -75,7 +73,7 @@ func formatResult(result interface{}, operand1Type string, operand2Type string) 
 		if operand1Type == "roman" || operand2Type == "roman" {
 			// Если результат меньше 1, выходим из программы с ошибкой
 			if num < 1 {
-				fmt.Println("Result cannot be less than 1 for Roman numerals")
+				fmt.Println("Результат не может быть меньше 1 для римских цифр")
 				os.Exit(1)
 			}
 			return arabicToRoman(int(num))
@@ -111,7 +109,7 @@ func parseOperand(token string, numberType string) float64 {
 	if numberType == "arabic" {
 		operand, err := strconv.ParseFloat(token, 64)
 		if err != nil {
-			fmt.Println("Invalid operand:", token)
+			fmt.Println("Недопустимое выражение:", token)
 			os.Exit(1)
 		}
 		return operand
@@ -129,18 +127,17 @@ func parseOperand(token string, numberType string) float64 {
 			"VIII": 8,
 			"IX":   9,
 			"X":    10,
-			// Добавьте другие римские числа по мере необходимости
 		}
 
 		if num, ok := romanMap[token]; ok {
 			if num < 1 || num > 10 {
-				fmt.Println("Roman numbers must be between I and X")
+				fmt.Println("Римские цифры должны быть от I до X")
 				os.Exit(1)
 			}
 			return float64(num)
 		}
 
-		fmt.Println("Invalid operand:", token)
+		fmt.Println("Недопустимое выражение:", token)
 		os.Exit(1)
 	}
 
@@ -156,7 +153,7 @@ func determineNumberType(token string) string {
 		return "arabic"
 	}
 
-	fmt.Println("Invalid number format:", token)
+	fmt.Println("Недопустимое выражение:", token)
 	os.Exit(1)
 	return ""
 }
@@ -187,7 +184,7 @@ func multiply(a, b float64) float64 {
 
 func divide(a, b float64) float64 {
 	if b == 0 {
-		fmt.Println("Division by zero")
+		fmt.Println("Деление на ноль")
 		os.Exit(1)
 	}
 	// Отбрасываем остаток и возвращаем только целую часть результата
@@ -196,14 +193,14 @@ func divide(a, b float64) float64 {
 
 func checkRange(num float64) {
 	if num < 1 || num > 10 {
-		fmt.Println("Numbers must be between 1 and 10")
+		fmt.Println("Числа должны быть от 1 до 10")
 		os.Exit(1)
 	}
 }
 
 func checkInteger(num float64, numberType string) {
 	if numberType == "arabic" && num != float64(int(num)) {
-		fmt.Println("Numbers must be integers")
+		fmt.Println("Числа должны быть целыми")
 		os.Exit(1)
 	}
 }
