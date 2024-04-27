@@ -1,28 +1,19 @@
 Requirements:
 
-The calculator can perform addition, subtraction, multiplication and division operations with two numbers: a + b, a - b, a * b, a / b. The data is transferred on a single line (see example below). Solutions in which each number and arithmetic operation is passed from a new line are considered incorrect.
-
-The calculator can work with both Arabic (1, 2, 3, 4, 5...) and Roman (I, II, III, IV, V...) numbers.
-
-The calculator must accept as input numbers from 1 to 10 inclusive, no more. At the output, the numbers are not limited in value and can be any.
-
-The calculator can work only with integers.
-
-The calculator can only work with Arabic or Roman numerals at a time, when the user enters a string like 3 + II, the calculator should panic and stop working.
-
-When entering Roman numbers, the answer should be output in Roman numerals, respectively, when entering Arabic numbers, the answer is expected in Arabic numerals.
-
-If the user enters inappropriate numbers, the application should panic and terminate.
-
-If the user enters a string that does not match one of the above arithmetic operations, the application panics and terminates.
-
-The result of a division operation is an integer, the remainder is discarded.
-
-The result of the calculator operation with Arabic numbers can be negative numbers and zero. The result of the calculator with Roman numerals can only be positive numbers, if the result is less than one, the program should panic. 
+* Выполнение операций сложения, вычитания, умножения и деления с двумя числами. Данные передаются в одну строку;
+* Работает как с арабскими (1, 2, 3...), так и с римскими (I, II, III...) числами;
+* Принимает на вход числа от 1 до 10 включительно, не более. На выходе числа не ограничиваются по величине и могут быть любыми; (при тесте 11 * 11 пишет лишнее exit status 1)
+* Умеет работать только с целыми числами; (при тесте 1.5 * 2.5 пишет лишнее exit status 1)
+* Работает только с арабскими или римскими цифрами одновременно, при вводе пользователем строки вроде 3 + II калькулятор должен выдать панику и прекратить работу;
+* При вводе римских чисел ответ будет выведен римскими цифрами, соответственно, при вводе арабских — ответ ожидается арабскими;
+* При вводе пользователем не подходящих чисел приложение выдаёт панику и завершает работу;
+* При вводе пользователем строки, не соответствующей одной из вышеописанных арифметических операций, приложение выдаёт панику и завершает работу; (при тесте 32 * 32 пишет лишнее exit status 1)
+* Результатом операции деления является целое число, остаток отбрасывается;
+* Результатом работы калькулятора с арабскими числами могут быть отрицательные числа и ноль. Результатом работы калькулятора с римскими числами могут быть только положительные числа, если результат работы меньше единицы, программа должна выдать панику. (при тесте V - X пишет лишнее exit status 1) 
 
 ===================================================================
 
-How to make a new commit
+Как сделать новый коммит в гит:
 
 echo "ANYTHING TEXT" >> README.md
 git init
