@@ -3,7 +3,9 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -14,11 +16,13 @@ func main() {
 	fmt.Print("Enter an expression: ")
 	expression, _ := reader.ReadString('\n')
 
-	result := calculate(expression)
-	fmt.Printf("Result: %f\n", result)
+	result, operand1Type, operand2Type := calculateResult(expression)
+	if result != nil {
+		fmt.Printf("Result: %s\n", formatResult(result, operand1Type, operand2Type))
+	}
 }
 
-func calculate(expression string) float64 {
+func calculateResult(expression string) (interface{}, string, string) {
 	// Remove trailing newline character
 	expression = strings.TrimSuffix(expression, "\n")
 
@@ -28,38 +32,170 @@ func calculate(expression string) float64 {
 		os.Exit(1)
 	}
 
-	operand1, err := strconv.ParseFloat(tokens[0], 64)
-	if err != nil {
-		fmt.Println("Invalid operand 1:", err)
-		os.Exit(1)
-	}
-
+	operand1Type := determineNumberType(tokens[0]) // Определяем тип первого операнда
 	operator := tokens[1]
+	operand2Type := determineNumberType(tokens[2]) // Определяем тип второго операнда
 
-	operand2, err := strconv.ParseFloat(tokens[2], 64)
-	if err != nil {
-		fmt.Println("Invalid operand 2:", err)
-		os.Exit(1)
+	if operand1Type != operand2Type {
+		fmt.Println("Mixing of arabic and roman numerals is not allowed")
+		return nil, "", ""
 	}
 
-	var result float64
+	operand1 := parseOperand(tokens[0], operand1Type)
+	operand2 := parseOperand(tokens[2], operand2Type)
+
+	checkRange(operand1)
+	checkRange(operand2)
+	checkInteger(operand1, operand1Type)
+	checkInteger(operand2, operand2Type)
+
+	var result interface{}
 	switch operator {
 	case "+":
-		result = operand1 + operand2
+		result = add(operand1, operand2)
 	case "-":
-		result = operand1 - operand2
+		result = subtract(operand1, operand2)
 	case "*":
-		result = operand1 * operand2
+		result = multiply(operand1, operand2)
 	case "/":
-		if operand2 == 0 {
-			fmt.Println("Division by zero")
-			os.Exit(1)
-		}
-		result = operand1 / operand2
+		result = divide(operand1, operand2)
 	default:
 		fmt.Println("Invalid operator:", operator)
+		return nil, "", ""
+	}
+
+	return result, operand1Type, operand2Type
+}
+
+func formatResult(result interface{}, operand1Type string, operand2Type string) string {
+	// Проверяем, является ли результат числом
+	if num, ok := result.(float64); ok {
+		if num < 1 || num > 10 {
+			return fmt.Sprintf("%.2f", num)
+		}
+		// Определяем тип операндов и возвращаем результат соответственно
+		if operand1Type == "roman" || operand2Type == "roman" {
+			return arabicToRoman(int(num))
+		}
+		return fmt.Sprintf("%.0f", num)
+	}
+	return fmt.Sprintf("%v", result)
+}
+
+func arabicToRoman(num int) string {
+	// Маппинг арабских чисел на римские
+	romanMap := map[int]string{
+		1:  "I",
+		2:  "II",
+		3:  "III",
+		4:  "IV",
+		5:  "V",
+		6:  "VI",
+		7:  "VII",
+		8:  "VIII",
+		9:  "IX",
+		10: "X",
+	}
+	return romanMap[num]
+}
+
+func parseOperand(token string, numberType string) float64 {
+	if numberType == "arabic" {
+		operand, err := strconv.ParseFloat(token, 64)
+		if err != nil {
+			fmt.Println("Invalid operand:", token)
+			os.Exit(1)
+		}
+		return operand
+	}
+
+	if numberType == "roman" {
+		romanMap := map[string]int{
+			"I":    1,
+			"II":   2,
+			"III":  3,
+			"IV":   4,
+			"V":    5,
+			"VI":   6,
+			"VII":  7,
+			"VIII": 8,
+			"IX":   9,
+			"X":    10,
+			// Добавьте другие римские числа по мере необходимости
+		}
+
+		if num, ok := romanMap[token]; ok {
+			if num < 1 || num > 10 {
+				fmt.Println("Roman numbers must be between I and X")
+				os.Exit(1)
+			}
+			return float64(num)
+		}
+
+		fmt.Println("Invalid operand:", token)
 		os.Exit(1)
 	}
 
-	return result
+	return 0
+}
+
+func determineNumberType(token string) string {
+	if isRomanNumeral(token) {
+		return "roman"
+	}
+
+	if isArabicNumeral(token) {
+		return "arabic"
+	}
+
+	fmt.Println("Invalid number format:", token)
+	os.Exit(1)
+	return ""
+}
+
+func isRomanNumeral(str string) bool {
+	// Проверка на римское число
+	match, _ := regexp.MatchString(`^[IVXLCDM]+$`, str)
+	return match
+}
+
+func isArabicNumeral(str string) bool {
+	// Проверка на арабское число
+	_, err := strconv.Atoi(str)
+	return err == nil
+}
+
+func add(a, b float64) float64 {
+	return a + b
+}
+
+func subtract(a, b float64) float64 {
+	return a - b
+}
+
+func multiply(a, b float64) float64 {
+	return a * b
+}
+
+func divide(a, b float64) float64 {
+	if b == 0 {
+		fmt.Println("Division by zero")
+		os.Exit(1)
+	}
+	// Отбрасываем остаток и возвращаем только целую часть результата
+	return math.Trunc(a / b)
+}
+
+func checkRange(num float64) {
+	if num < 1 || num > 10 {
+		fmt.Println("Numbers must be between 1 and 10")
+		os.Exit(1)
+	}
+}
+
+func checkInteger(num float64, numberType string) {
+	if numberType == "arabic" && num != float64(int(num)) {
+		fmt.Println("Numbers must be integers")
+		os.Exit(1)
+	}
 }
