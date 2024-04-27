@@ -18,7 +18,7 @@ func main() {
 
 	result, operand1Type, operand2Type := calculateResult(expression)
 	if result != nil {
-		fmt.Printf("Result: %s\n", formatResult(result, operand1Type, operand2Type))
+		fmt.Printf("Результат: %s\n", formatResult(result, operand1Type, operand2Type))
 	}
 }
 
