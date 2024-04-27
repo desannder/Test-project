@@ -13,7 +13,7 @@ import (
 func main() {
 	reader := bufio.NewReader(os.Stdin)
 
-	fmt.Print("Enter an expression: ")
+	fmt.Print("Enter the expression: ")
 	expression, _ := reader.ReadString('\n')
 
 	result, operand1Type, operand2Type := calculateResult(expression)
@@ -69,17 +69,25 @@ func calculateResult(expression string) (interface{}, string, string) {
 
 func formatResult(result interface{}, operand1Type string, operand2Type string) string {
 	// Проверяем, является ли результат числом
-	if num, ok := result.(float64); ok {
-		if num < 1 || num > 10 {
-			return fmt.Sprintf("%.2f", num)
-		}
-		// Определяем тип операндов и возвращаем результат соответственно
+	switch v := result.(type) {
+	case float64:
+		num := v
 		if operand1Type == "roman" || operand2Type == "roman" {
+			// Если результат меньше 1, выходим из программы с ошибкой
+			if num < 1 {
+				fmt.Println("Result cannot be less than 1 for Roman numerals")
+				os.Exit(1)
+			}
 			return arabicToRoman(int(num))
+		} else {
+			if num < 1 || num > 10 {
+				return fmt.Sprintf("%.2f", num)
+			}
+			return fmt.Sprintf("%.0f", num)
 		}
-		return fmt.Sprintf("%.0f", num)
+	default:
+		return fmt.Sprintf("%v", result)
 	}
-	return fmt.Sprintf("%v", result)
 }
 
 func arabicToRoman(num int) string {
